@@ -1,0 +1,110 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+
+
+html, body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background:#4264FB;
+}
+
+
+.container{
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-areas: "a m";
+}
+
+#Radios1{
+    margin-top: 120px;
+}
+aside{
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+    padding-top: 27px;
+    border-radius: 80px;
+    background: white;
+    height: 90vh;
+    grid-area: a;
+    font-size: 20px;
+    font-family: "Roboto",sans-serif;
+   
+    
+    
+}
+
+main{
+    height: 100vh;
+    grid-area: m;
+    
+}
+
+.input-group{
+    
+    display: flex;
+    margin-left:20px;
+    margin-top: 5px;
+    margin-right: 20px;
+}
+.input-group input + input{
+    margin-left: 8px;
+}
+
+.input-group input{
+    width: 100%;
+    height: 25px;
+    color: #333;
+    border: 1px solid #dcdce6;
+    border-radius: 8px;
+    padding: 0 24px;
+    font-size: 10px;
+    font-size: bold;
+}
+
+
+.form-check{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 20px;
+}
+
+.button {
+    margin-top: 40px;
+    margin-left: 50px;
+    position: relative;
+    display:inline-block;
+    width: 200px;
+    height: 36px;
+    border-radius: 18px;
+    background-color: #4264FB;
+    border: solid 1px transparent;
+    color: white;
+    font-size: 18px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all .1s ease-in-out;
+}
+ 
+.formulario{
+    border-radius: 50px
+}
+
+#map { position: absolute; 
+       top: 0; 
+       bottom: 0; 
+       width: 73.5%; 
+       border-radius: 40px;  
+       margin-top: 20px; 
+       margin-bottom: 20px;
+    }
+.marker {
+       background-image: url('assets/mapbox-icon.png');
+       background-size: cover;
+       width: 50px;
+       height: 50px;
+       border-radius: 50%;
+       cursor: pointer;}
+  

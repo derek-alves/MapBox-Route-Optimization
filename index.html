@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" type="text/css" href="style.css">
+      <script src="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js"></script>
+      <link href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css" rel="stylesheet" />
+      <title>Bootstrap Registration form</title>
+    </head>
+    <body>
+      <div class="container">
+      <aside>
+       <div class="formulario">
+        <div class="form-check">
+          <input 
+          onclick="document.getElementById('text').disabled = false"
+          class="form-check-input" type="radio" name="Radios" id="Radios" value="1">
+          <label class="form-check-label" for="exampleRadios1">
+            Amplitude
+          </label>
+          <div class="input-group">
+
+            <input
+            onclick="document.getElementById('text1').disabled = false"
+             type="text" id="text" class="form-control" placeholder="Inicio"disabled = "true"/>
+
+            <input 
+            type="text" 
+            id="text1" class="form-control" 
+            placeholder="Fim"
+            disabled = "true"/>
+        </div>
+        </div>
+        <div class="form-check">
+          <input
+          onclick="document.getElementById('text2').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="2">
+          <label class="form-check-label" for="exampleRadios2">
+            Profundidade
+          </label>
+          <div class="input-group">
+            <input
+            onclick="document.getElementById('text3').disabled = false"
+             type="text" id="text2" class="form-control" placeholder="Inicio"disabled = "true"/>
+            <input type="text" id="text3" class="form-control" placeholder="Fim"disabled = "true"/>
+        </div>
+        </div>
+        <div class="form-check">
+          <input 
+          onclick="document.getElementById('text4').disabled = false"class="form-check-input" type="radio" name="Radios" id="Radios" value="3" >
+          <label class="form-check-label" for="exampleRadios3">
+            Profundidade com limite
+          </label>
+          <div class="input-group">
+            <input 
+            onclick="document.getElementById('text5').disabled = false"
+            type="text" id="text4" class="form-control" placeholder="Inicio"disabled = "true"/>
+            <input
+            onclick="document.getElementById('text6').disabled = false"
+            type="text" id="text5"class="form-control" placeholder="Fim"disabled = "true"/>
+            <input type="text" id="text6"class="form-control" placeholder="Limite"disabled = "true"/>
+        </div>
+        </div>
+          <button class="button" id="btn">Aplicar</button>
+        </div>
+
+        
+      </aside>
+
+
+<main>
+
+  <div id="map"></div>
+<script>
+              mapboxgl.accessToken = 'pk.eyJ1IjoiZGVyZWtraXMiLCJhIjoiY2s3cXczenJ1MDd3bTNtbHVjajlxZjdyaSJ9.3sxJmEM9hwod4o-pM0qutA';
+              var map = (window.map = new mapboxgl.Map({
+              container: 'map',
+              style: 'mapbox://styles/mapbox/dark-v10',
+              center: [12.475781,41.903153],
+              zoom: 14
+              }));
+              let btnAplicar = document.querySelector('#btn')
+              let AmpliInputInit = document.querySelector('#text')
+              let AmpliInputEnd = document.querySelector('#text1')
+              let ProfInputInit = document.querySelector('#text2')
+              let ProfInputEnd = document.querySelector('#text3')
+              let Prof2InputInit = document.querySelector('#text4')
+              let Prof2InputEnd = document.querySelector('#text5')
+              let Prof2InputLimit = document.querySelector('#text6')
+
+
+var result = btnAplicar.addEventListener('click',()=>{
+   document.getElementsByName('Radios').forEach(radio => {
+       if(radio.checked){
+        class No{
+            constructor(pai =null, valor1=null, valor2=null,anterior=null,proximo=null){
+                this.pai = pai;
+                this.valor1 = valor1;
+                this.valor2 = valor2;
+                this.anterior = anterior;
+                this.proximo = proximo;
+            }
+        }
+        
+        class lista{
+            constructor(head = null, tail = null){
+                this.head = head
+                this.tail = tail
+            }
+        
+            inserePrimeiro(v1,v2,p){
+                var novo_no = new No(p,v1,v2,null,null);
+                if (this.head == null){
+                    this.tail = novo_no;
+                }else{
+                    novo_no.proximo = this.head
+                    this.head.anterior = novo_no
+                }
+                this.head = novo_no
+            }
+        
+            insereUltimo(v1,v2,p){
+                var novo_no = new No(p,v1,v2,null,null)
+                if(this.head == null){
+                    this.head = novo_no
+                }else{
+                    this.tail.proximo = novo_no
+                    novo_no.anterior = this.tail
+                }
+                this.tail = novo_no
+            }
+            deletaPrimeiro()
+            {
+                if (this.head == null){
+                    return null
+                }else{
+                    var no = this.head
+                    this.head = this.head.proximo
+                    if (this.head != null){
+                        this.head.anterior = null
+                    }else{
+                        this.tail = null
+                    }
+                    return no
+                }
+            }
+        
+            deletaUltimo(){
+                if(this.tail == null){
+                    return null
+                }else{
+                    no = this.tail
+                    this.tail = this.tail.anterior
+                    if(this.tail != null){
+                        this.tail.proximo = null
+                    }else{
+                        this.head = null
+                    }
+                    return no
+                }
+            }
+        
+            vazio(){
+                if(this.head == null){
+                    return true
+                }else{
+                    return false
+                }
+            }
+        
+            exibeLista(){
+                aux = this.head
+                str = []
+                while(aux != null){
+                    str.push(aux.valor1)
+                    aux = aux.proximo
+                }
+                return str
+            }
+        
+            exibeArvore(){
+                var atual = this.tail
+                var caminho = []
+                while(atual.pai != null){
+                    caminho.push(atual.valor1)
+                    atual = atual.pai
+                }
+                caminho.push(atual.valor1)
+                return caminho
+            }
+        
+            exibeArvore1(valor){
+                var atual = this.head
+                while(atual.valor1 != valor){
+                    atual = atual.proximo
+                }
+                var caminho = []
+                atual = atual.pai
+                while(atual.pai != null){
+                    caminho.push(atual.valor1)
+                    atual = atual.pai
+                }
+                caminho.push(atual.valor1)
+                return caminho
+            }
+        
+            primeiro(){
+                return this.head
+            }
+        
+            ultimo(){
+                return this.tail
+            }
+        
+        }
+        
+        
+        grafo = [
+            [12, 16], 
+            [3,6],
+            [10,13],
+            [1,5,8,11],
+            [13,19],
+            [3,6,10,15],
+            [1,5,8,10],
+            [14,16],
+            [3,6,12],
+            [10,13],
+            [2,5,6,9,15],
+            [3,15,16],
+            [0,8],
+            [2,4,9],
+            [7,15,17],
+            [5,10,11,14],
+            [0,7,11],
+            [14,18],
+            [17],
+            [4]
+                
+         ]
+        
+        function map(geojson){
+          mapboxgl.accessToken = 'pk.eyJ1IjoiZGVyZWtraXMiLCJhIjoiY2s3cXczenJ1MDd3bTNtbHVjajlxZjdyaSJ9.3sxJmEM9hwod4o-pM0qutA';
+              var map = (window.map = new mapboxgl.Map({
+              container: 'map',
+              style: 'mapbox://styles/mapbox/dark-v10',
+              center: [12.475781,41.903153],
+              zoom: 13
+              }));
+              
+              map.on('load', function() {
+                  map.addSource('line', {
+                  type: 'geojson',
+                  lineMetrics: true,
+                  data: geojson[0]
+                  });
+                  
+
+                  map.addLayer({
+                  type: 'line',
+                  source: 'line',
+                  id: 'line',
+                  paint: {
+                  'line-color': 'red',
+                  'line-width': 7,
+
+                  'line-gradient': [
+                  'interpolate',
+                  ['linear'],
+                  ['line-progress'],
+                  0,
+                  'grey'
+                  ]
+                  },
+                  layout: {
+                  'line-cap': 'round',
+                  'line-join': 'round'
+                  }
+                  });
+                  });
+
+                  geojson[1].features.forEach(function(marker) {
+
+
+                  var el = document.createElement('div');
+                  el.className = 'marker';
+
+
+                  new mapboxgl.Marker(el)
+                    .setLngLat(marker.geometry.coordinates)
+                    .setPopup(new mapboxgl.Popup({ offset: 25 }) 
+                    .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
+                    .addTo(map);
+                  });
+        }
+        const busca = class busca{
+        pontos(caminho){
+var defaultJson = []
+
+var imgDescri = [
+    ['O Coliseu poderia abrigar, estima-se, entre 50 mil e 80 mil espectadores, com uma audiência média de cerca de 65 mil pessoas.',
+    'Coliseu'],
+    ['A Fontana di Trevi é a maior (cerca de 26 metros de altura e 20 metros de largura) e mais ambiciosa construção de fontes barrocas da Itália e está localizada no rione Trevi, em Roma','Fontana di Trevi'],
+    ['Trata-se do maior e mais importante edifício religioso do catolicismo e um dos locais cristãos mais visitados do mundo',
+    'Basilica de São Pedro'],
+    ['É uma das mais bem preservadas estruturas romanas antigas e permaneceu em uso por toda a sua história','Panteão'],
+    ['Os Museus Vaticanos (Musei Vaticani) constituem um conglomerado de renomadas instituições culturais da Santa Sé, que abrigam extensas e valiosas coleções de arte e antiguidades colecionadas ao longo dos séculos pelos diversos pontífices romanos',
+    'Museus do Vaticano'],
+    ['Dotada de um estilo barroco muito elegante, a Praça Navona é uma das praças mais bonitas e populares de Roma',
+    'Piazza Navona'],
+    ['Piazza di Spagna, conhecida até o século XVII como Piazza di Francia, com sua famosa escadaria até a igreja Trinità dei Monti, é uma das praças mais famosas de Roma, Itália, localizada no rione Campo Marzio','Piazza Di Spagna'],
+    ['O Fórum era o centro do poder romano. Bem no centro da Roma Antiga, esse pequeno vale, entre as colinas do Palatino e do Capitólio, guarda os vestígios de uma poderosa civilização que marcou o mundo em que vivemos.','Forum Romano'],
+    ['Os Jardins da Villa Borghese compõem um conjunto paisagístico à maneira inglesa situados em Roma, na colina Pinciana. Contém muitos edifícios, museus e atracções, dos quais se destaca a Villa Borghese Pinciana, onde está instalado actualmente a Galleria Borghese.',
+    'Jardins da Villa Borghese'],
+    ['Sua primitiva estrutura foi iniciada no ano 135 pelo imperador Adriano como um mausoléu pessoal e familiar (Tumbas de Adriano), concluído por Antonino Pio em 139.',
+    'Castelo SantAngelo'],
+    ['é uma das sete colinas sobre as quais foi fundada a cidade de Roma',
+    'Monte Capitolino'],
+    ['Mercado de Trajano é o nome moderno de um complexo de edifícios da época romana na cidade de Roma localizado na encosta do monte Quirinal',
+    'Mercado Trajano'],
+    ['A Galleria Borghese é um museu em Roma, Itália. A sua colecção compreende várias esculturas e pinturas de Gian Lorenzo Bernini, Caravaggio, Leonardo da Vinci, Raffaello, Rubens, Ticiano.',
+    'Galleria Borghese'],
+    ['A Capela Sistina é uma capela situada no Palácio Apostólico, residência oficial do Papa na Cidade-Estado do Vaticano',
+    'Sistine Chapel'],
+    ['Os Museus Capitolinos são um conjunto de palácios romanos que abrigam uma vasta e importantíssima coleção de obras de arte',
+    'Museu Capitolino'],
+    ['O Campo de Fiori é uma praça no centro de Roma, ao leste do rio Tibre, no rione Parione',
+    'Campo de Fiori'],
+    ['Arco de Constantino é um arco triunfal de Roma construído por ordem do Senado Romano para comemorar a vitória do imperador Constantino sobre Maxêncio na Batalha da Ponte Mílvia em 312',
+    'Arco de Constantino'],
+    ['Teatro de Marcelo foi um antigo teatro romano a céu aberto localizado em Roma construído nos últimos da República Romana para a realização de espetáculos de teatro e música',
+    'Teatro de Marcelo'],
+    ['La Bocca della Verità ou A Boca da Verdade é uma imagem esculpida em mármore pavonazzo de uma face humanoide que fica no pórtico de Santa Maria in Cosmedin',
+    'Bocca Della Verità'],
+    ['são jardins urbanos privados e parques que cobrem mais da metade do país',
+    'Jardins Vaticanos']
+]
+
+var rota = []
+var pontos = [
+[12.492274,41.890290],
+[12.483309,41.900987],
+[12.453945,41.902208],
+[12.476864,41.898594],
+[12.453657,41.906512],
+[12.473099,41.899126],
+[12.482381,41.905945],
+[12.485389,41.892646],
+[12.485871,41.912844],
+[12.466287,41.903287],
+[12.466731,41.900510],
+[12.486334,41.895761],
+[12.486334,41.914450],
+[12.454816,41.903194],
+[12.482568,41.893103],
+[12.472176,41.895767],
+[12.490602,41.889866],
+[12.479930,41.892083],
+[12.481439,41.888210],
+[12.450128,41.903619]]
+
+var cordenadas = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            'properties': {},
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [ 
+
+                ],
+                'type': 'LineString'
+            
+            }
+        }
+    ]
+}
+
+
+
+var geojson = {
+'type': 'FeatureCollection',
+'features': []
+}
+
+
+for(var cont in caminho){
+    if(pontos.indexOf(caminho[cont]) && imgDescri.indexOf(caminho[cont])){
+         var point = pontos[caminho[cont]]
+         rota.push(pontos[caminho[cont]]);
+         var descri = imgDescri[caminho[cont]][0];
+         var name =  imgDescri[caminho[cont]][1];
+         var pointDetail =
+         {
+             'type': 
+             'Feature',
+             'geometry': {
+                 'type': 'Point',
+                 'coordinates':point
+             },
+             'properties': {
+                 'title': `${name}`,
+                 'description': `${descri}`
+             }
+         }
+         }
+         geojson.features.push(pointDetail);
+}
+cordenadas.features[0].geometry.coordinates = rota;
+defaultJson.push(cordenadas,geojson);
+return defaultJson
+}
+
+             amplitude(inicio, fim){
+                 var l1 = new lista()
+                 var l2 = new lista()
+                 var visitado = []
+                 l1.insereUltimo(inicio,0,null)
+                 l2.insereUltimo(inicio,0,null)
+                 var linha = []
+                 linha.push(inicio)
+                 linha.push(0)
+                 visitado.push(linha)
+        
+                 var flag1 = false
+                 while(l1.vazio() != null && flag1 == false){
+                        var atual = l1.deletaPrimeiro()
+                        var ind = atual.valor1
+                        for(var i in grafo[ind]){
+                            var novo = grafo[ind][i]
+                            var flag = true
+                            for(var j in visitado){
+                                if(visitado[j][0]==novo){
+                                    flag=false
+                                    break;
+                                }
+                            }
+        
+                            if(flag){
+                                l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                                l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                                linha = []
+                                linha.push(novo)
+                                linha.push(atual.valor2+1)
+                                visitado.push(linha)
+                                if(novo == fim){
+                                    flag1 = true
+                                    break
+                                }
+                            }
+                        }
+                 }
+        
+                 var caminho = []
+                 if(flag1){
+                     caminho = l2.exibeArvore()
+                 }else{
+                     caminho = "Caminho não encontrado"
+                 }
+                 caminho = caminho.reverse()
+                 return caminho
+             }
+         }
+
+          if(radio.value == 1){
+            var ampInit =  AmpliInputInit.value;
+            var ampEnd =  AmpliInputEnd.value;
+            var buscaa = new busca();
+            var result = buscaa.amplitude(ampInit, ampEnd)
+            var geojson = buscaa.pontos(result);
+            map(geojson);
+           }
+           else if(radio.value == 2){
+                var profInit = ProflInputInit.value;
+                var profEnd = ProfInputEnd.value;
+
+           }
+           else if(radio.value == 3){
+               var prof2Init = Prof2lInputInit.value;
+               var prof2End =  Prof2lInputEnd.value;
+               var prof2Limit = Prof2lInputLimit.value;
+           }
+           
+       }
+   })
+})
+
+          </script>
+        </main>
+      </div>
+    
+    </body>
+</html>
