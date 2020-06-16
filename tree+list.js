@@ -152,6 +152,7 @@ class busca{
          var l1 = new lista()
          var l2 = new lista()
          var visitado = []
+
          l1.insereUltimo(inicio,0,null)
          l2.insereUltimo(inicio,0,null)
          var linha = []
@@ -197,8 +198,64 @@ class busca{
          caminho = caminho.reverse()
          return caminho
      }
+
+     profundidade(inicio, fim){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
+
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
+
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo()
+               if (atual == null){break}
+               var ind = atual.valor1
+
+               for (let i = 0; i < grafo[ind].length; i--){
+                   var novo = grafo[ind][i]
+                   var flag = true
+                   for(var j in visitado){
+                       if(visitado[j][0]==novo){
+                            if(visitado[j][1]<=(atual.valor2+1)){
+                                   flag = false;   
+                            }
+                            else{
+                                visitado[j][1]<=(atual.valor2+1)
+                         }
+                         break;
+                     }
+
+                   if(flag){
+                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                       linha = []
+                       linha.push(novo)
+                       linha.push(atual.valor2+1)
+                       visitado.push(linha)
+                       if(novo == fim){
+                           var caminho =[]
+                           caminho = l2.exibeArvore()
+                           return caminho
+                       }
+                   }
+               }
+        }
+
+    }  
+    return null;
  }
+}
+
+
 //const sol = new busca()
 
 //const caminho = sol.amplitude(0,6)
 //console.log(caminho)
+
+

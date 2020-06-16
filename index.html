@@ -61,6 +61,39 @@
             <input type="text" id="text6"class="form-control" placeholder="Limite"disabled = "true"/>
         </div>
         </div>
+
+
+        <div class="form-check">
+            <input 
+            onclick="document.getElementById('text7').disabled = false"class="form-check-input" type="radio" name="Radios" id="Radios" value="3" >
+            <label class="form-check-label" for="exampleRadios4">
+              Aprofundamento Interativo
+            </label>
+            <div class="input-group">
+              <input 
+              onclick="document.getElementById('text8').disabled = false"
+              type="text" id="text7" class="form-control" placeholder="Inicio"disabled = "true"/>
+              <input
+              onclick="document.getElementById('text9').disabled = false"
+              type="text" id="text5"class="form-control" placeholder="Fim"disabled = "true"/>
+              <input type="text" id="text9"class="form-control" placeholder="Limite"disabled = "true"/>
+          </div>
+          </div>
+
+
+          <div class="form-check">
+            <input
+            onclick="document.getElementById('text2').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="2">
+            <label class="form-check-label" for="exampleRadios5">
+              Profundidade
+            </label>
+            <div class="input-group">
+              <input
+              onclick="document.getElementById('text11').disabled = false"
+               type="text" id="text10" class="form-control" placeholder="Inicio" disabled = "true"/>
+              <input type="text" id="text11" class="form-control" placeholder="Fim"disabled = "true"/>
+          </div>
+          </div>
           <button class="button" id="btn">Aplicar</button>
         </div>
 
@@ -82,16 +115,27 @@
               let btnAplicar = document.querySelector('#btn')
               let AmpliInputInit = document.querySelector('#text')
               let AmpliInputEnd = document.querySelector('#text1')
+
               let ProfInputInit = document.querySelector('#text2')
               let ProfInputEnd = document.querySelector('#text3')
+
               let Prof2InputInit = document.querySelector('#text4')
               let Prof2InputEnd = document.querySelector('#text5')
               let Prof2InputLimit = document.querySelector('#text6')
+
+              let AprofInputInit = document.querySelector('#text7')
+              let AprofInputEnd = document.querySelector('#text8')
+              let AprofInputMax = document.querySelector('#text9')
+
+              let BidInputInit = document.querySelector('#text10');
+              let BidInputEnd = document.querySelector('#text11');
+
 
 
 var result = btnAplicar.addEventListener('click',()=>{
    document.getElementsByName('Radios').forEach(radio => {
        if(radio.checked){
+
         class No{
             constructor(pai =null, valor1=null, valor2=null,anterior=null,proximo=null){
                 this.pai = pai;
@@ -149,7 +193,7 @@ var result = btnAplicar.addEventListener('click',()=>{
                 if(this.tail == null){
                     return null
                 }else{
-                    no = this.tail
+                    var no = this.tail
                     this.tail = this.tail.anterior
                     if(this.tail != null){
                         this.tail.proximo = null
@@ -215,7 +259,7 @@ var result = btnAplicar.addEventListener('click',()=>{
         }
         
         
-        grafo = [
+        var grafo = [
             [12, 16], 
             [3,6],
             [10,13],
@@ -293,7 +337,7 @@ var result = btnAplicar.addEventListener('click',()=>{
                     .addTo(map);
                   });
         }
-        const busca = class busca{
+const busca = class busca{
         pontos(caminho){
 var defaultJson = []
 
@@ -407,9 +451,9 @@ for(var cont in caminho){
          }
          geojson.features.push(pointDetail);
 }
-cordenadas.features[0].geometry.coordinates = rota;
-defaultJson.push(cordenadas,geojson);
-return defaultJson
+                cordenadas.features[0].geometry.coordinates = rota;
+                defaultJson.push(cordenadas,geojson);
+                return defaultJson
 }
 
              amplitude(inicio, fim){
@@ -461,7 +505,320 @@ return defaultJson
                  caminho = caminho.reverse()
                  return caminho
              }
-         }
+
+
+    profundidade(inicio, fim){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
+
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
+
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo()
+               if (atual == null){break}
+               var ind = atual.valor1
+
+               for (let i = grafo[ind].length - 1; i >= 0; i--){
+                   var novo = grafo[ind][i]
+                   var flag = true
+                   for(var j in visitado){
+                       if(visitado[j][0]==novo){
+                            if(visitado[j][1]<=(atual.valor2+1)){
+                                   flag = false;   
+                            }
+                            else{
+                                visitado[j][1]<=(atual.valor2+1)
+                         }
+                         break;
+                     }
+
+                   if(flag){
+                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                       linha = []
+                       linha.push(novo)
+                       linha.push(atual.valor2+1)
+                       visitado.push(linha)
+                       if(novo == fim){
+                           var caminho =[]
+                           caminho = l2.exibeArvore()
+                           return caminho
+                       }
+                   }
+               }
+        }
+
+    }  
+    return null;
+ }
+
+
+ profundidade_limitada(inicio, fim, limite){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
+
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
+
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo()
+               if (atual == null){break}
+
+            if(atual.valor2 < limite){
+               var ind = atual.valor1
+               for (let i = grafo[ind].length - 1; i >= 0; i--){
+                   var novo = grafo[ind][i]
+                   var flag = true
+                   for(var j in visitado){
+                       if(visitado[j][0]==novo){
+                            if(visitado[j][1]<=(atual.valor2+1)){
+                                   flag = false;   
+                            }
+                            else{
+                                visitado[j][1]<=(atual.valor2+1)
+                         }
+                         break;
+                     }
+
+                   if(flag){
+                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                       linha = []
+                       linha.push(novo)
+                       linha.push(atual.valor2+1)
+                       visitado.push(linha)
+                       if(novo == fim){
+                           var caminho =[]
+                           caminho = l2.exibeArvore()
+                           return caminho
+                       }
+                   }
+               }
+        }
+    }
+
+ }  
+ //var texto = String(limite)+"limite execiddo";
+ return null;
+    
+}
+
+aprofundamento_interativo(inicio, fim, l_max){
+        
+    for(let limite =0; limite <= l_max.length; limite++){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
+
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
+
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo()
+               if (atual == null){break}
+
+            if(atual.valor2 < limite){
+               var ind = atual.valor1
+               for (let i = grafo[ind].length - 1; i >= 0; i--){
+                   var novo = grafo[ind][i]
+                   var flag = true
+                   for(let j in visitado){
+                       if(visitado[j][0]==novo){
+                            if(visitado[j][1]<=(atual.valor2+1)){
+                                   flag = false;   
+                            }
+                            else{
+                                visitado[j][1]=(atual.valor2+1)
+                         }
+                         break;
+                     }
+
+                   if(flag){
+                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                       linha = []
+                       linha.push(novo)
+                       linha.push(atual.valor2+1)
+                       visitado.push(linha)
+                       if(novo == fim){
+                           var caminho =[]
+                           caminho = l2.exibeArvore()
+                           return caminho
+                       }
+                   }
+               }
+        }
+    }
+
+  }
+}  
+
+}
+
+
+bidirecional(inicio, fim){
+        
+        
+            var l1 = new lista()
+            var l2 = new lista()
+
+            var l3 = new lista()
+            var l4 = new lista()    
+            var visitado = []
+    
+            l1.insereUltimo(inicio,0,null)
+            l2.insereUltimo(inicio,0,null)
+            var linha = []
+            linha.push(inicio)
+            linha.push(1)
+            visitado.push(linha)
+
+
+            l3.insereUltimo(fim,0,null)
+            l4.insereUltimo(fim,0,null)
+            linha = []
+            linha.push(fim)
+            linha.push(2)
+            visitado.push(linha)
+    
+            
+            while(true){
+
+                const flag1 = true;
+
+                while(flag1){
+                var atual = l1.deletaPrimeiro();
+                var ind = atual.valor1;
+                for(var i in grafo[ind]){
+                    var novo = grafo[ind][i];
+                    var flag2 = true;
+                    var flag3 = false;
+                    for (var j in visitado){
+                        if(visitado[j][0]==novo){
+                            if(visitado[j][1] == 1){
+                                flag2 = false;
+                            }else{
+                                flag3 = true;
+                            }
+                            break;
+                        }
+
+                    }
+
+                    if(flag2){
+                        l1.insereUltimo(novo,atual.valor2 + 1,atual);
+                        l2.insereUltimo(nvo,atual.valor2 + 1, atual);
+                        if(flag3){
+                            var caminho = [];
+                            caminho = l2.exibeArvore();
+                            caminho = caminho.reverse();
+                            caminho += l4.exibeArvore1(novo);
+                            return caminho;
+                        }else{
+                            linha = []
+                            linha.push(novo);
+                            linha.push(1);
+                            visitado.push(linha);
+                        } 
+                    }
+
+                }
+                if(l1.vazio() != true){
+                    const aux = l1.primeiro();
+                    if(aux.valor2 == atual.valor2){
+                        flag1 = true;
+                    }else{
+                        flag1 = false;
+                    }
+                }
+
+
+            }
+//segundo amplitude
+
+
+        const flag1 = true;
+
+        while(flag1){
+        var atual = l3.deletaPrimeiro();
+        if(atual == null){break}
+        var ind = atual.valor1;
+
+        for(var i in grafo[ind]){
+            var novo = grafo[ind][i];
+            var flag2 = true;
+            var flag3 = false;
+            for (var j in visitado){
+                if(visitado[j][0]==novo){
+                    if(visitado[j][1] == 2){
+                        flag2 = false;
+                    }else{
+                        flag3 = true;
+                    }
+                    break;
+                }
+
+            }
+
+            if(flag2){
+                l1.insereUltimo(novo,atual.valor2 + 1,atual);
+                l2.insereUltimo(nvo,atual.valor2 + 1, atual);
+                if(flag3){
+                    var caminho = [];
+                    caminho = l4.exibeArvore();
+                    caminho = caminho.reverse();
+                    caminho += l2.exibeArvore1(novo);
+                    return caminho;
+                }else{
+                    linha = []
+                    linha.push(novo);
+                    linha.push(2);
+                    visitado.push(linha);
+                } 
+            }
+
+        }
+        if(l3.vazio() != true){
+            const aux = l3.primeiro();
+            if(aux.valor2 == atual.valor2){
+                flag1 = true;
+            }else{
+                flag1 = false;
+            }
+        }
+
+
+    }
+
+}
+
+    
+}
+    
+
+
+
+//fim algoritmos
+
+}
 
           if(radio.value == 1){
             var ampInit =  AmpliInputInit.value;
@@ -472,15 +829,43 @@ return defaultJson
             map(geojson);
            }
            else if(radio.value == 2){
-                var profInit = ProflInputInit.value;
+                var profInit = ProfInputInit.value;
                 var profEnd = ProfInputEnd.value;
+                var buscaa = new busca();
+                var result = buscaa.profundidade(profInit,profEnd);
+                var geojson = buscaa.pontos(result);
+                map(geojson);
 
            }
            else if(radio.value == 3){
-               var prof2Init = Prof2lInputInit.value;
-               var prof2End =  Prof2lInputEnd.value;
-               var prof2Limit = Prof2lInputLimit.value;
+               var prof2Init = Prof2InputInit.value;
+               var prof2End =  Prof2InputEnd.value;
+               var prof2Limit = Prof2InputLimit.value;
+               var buscaa = new busca();
+               var result = buscaa.profundidade_limitada(prof2Init,prof2End,prof2Limit);
+               var geojson = buscaa.pontos(result);
+               map(geojson);
            }
+           else if(radio.value == 4){
+               var AprofInit = AprofInputInit.value;
+               var AprofEnd =  AprofInputEnd.value;
+               var AprofMax = AprofInputMax.value;
+               var buscaa = new busca();
+               var result = buscaa.profundidade_limitada(AprofInit,AprofEnd,AprofMax);
+               var geojson = buscaa.pontos(result);
+               map(geojson);
+           }
+
+           else if(radio.value == 5){
+               var BidInit = BidInputInit.value;
+               var BidEnd =  BidInputEnd.value;
+               
+               var buscaa = new busca();
+               var result = buscaa.profundidade_limitada(BidInit,BidEnd,);
+               var geojson = buscaa.pontos(result);
+               map(geojson);
+           }
+
            
        }
    })
