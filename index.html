@@ -65,7 +65,7 @@
 
         <div class="form-check">
             <input 
-            onclick="document.getElementById('text7').disabled = false"class="form-check-input" type="radio" name="Radios" id="Radios" value="3" >
+            onclick="document.getElementById('text7').disabled = false"class="form-check-input" type="radio" name="Radios" id="Radios" value="4" >
             <label class="form-check-label" for="exampleRadios4">
               Aprofundamento Interativo
             </label>
@@ -75,27 +75,74 @@
               type="text" id="text7" class="form-control" placeholder="Inicio"disabled = "true"/>
               <input
               onclick="document.getElementById('text9').disabled = false"
-              type="text" id="text5"class="form-control" placeholder="Fim"disabled = "true"/>
+              type="text" id="text8"class="form-control" placeholder="Fim"disabled = "true"/>
               <input type="text" id="text9"class="form-control" placeholder="Limite"disabled = "true"/>
           </div>
           </div>
 
 
           <div class="form-check">
+                    <input
+                    onclick="document.getElementById('text10').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="5">
+                    <label class="form-check-label" for="exampleRadios5">
+                    Bidirecional
+                    </label>
+                    <div class="input-group">
+                        <input
+                        onclick="document.getElementById('text11').disabled = false"
+                        type="text" id="text10" class="form-control" placeholder="Inicio" disabled = "true"/>
+                        <input type="text" id="text11" class="form-control" placeholder="Fim"disabled = "true"/>
+                    </div>
+          </div>
+         
+
+          <div class="form-check">
             <input
-            onclick="document.getElementById('text2').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="2">
+            onclick="document.getElementById('text12').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="6">
             <label class="form-check-label" for="exampleRadios5">
-              Profundidade
+              Custo uniforme
             </label>
             <div class="input-group">
               <input
-              onclick="document.getElementById('text11').disabled = false"
-               type="text" id="text10" class="form-control" placeholder="Inicio" disabled = "true"/>
-              <input type="text" id="text11" class="form-control" placeholder="Fim"disabled = "true"/>
+              onclick="document.getElementById('text13').disabled = false"
+               type="text" id="text12" class="form-control" placeholder="Inicio" disabled = "true"/>
+              <input type="text" id="text13" class="form-control" placeholder="Fim"disabled = "true"/>
           </div>
           </div>
+
+          <div class="form-check">
+            <input
+            onclick="document.getElementById('text14').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="7">
+            <label class="form-check-label" for="exampleRadios5">
+              Greedy
+            </label>
+            <div class="input-group">
+              <input
+              onclick="document.getElementById('text15').disabled = false"
+               type="text" id="text14" class="form-control" placeholder="Inicio" disabled = "true"/>
+              <input type="text" id="text15" class="form-control" placeholder="Fim"disabled = "true"/>
+          </div>
+          </div>
+
+          <div class="form-check">
+            <input
+            onclick="document.getElementById('text16').disabled = false" class="form-check-input" type="radio" name="Radios" id="Radios" value="8">
+            <label class="form-check-label" for="exampleRadios5">
+              A_estrela
+            </label>
+            <div class="input-group">
+              <input
+              onclick="document.getElementById('text17').disabled = false"
+               type="text" id="text16" class="form-control" placeholder="Inicio" disabled = "true"/>
+              <input type="text" id="text17" class="form-control" placeholder="Fim"disabled = "true"/>
+          </div>
+          </div>
+
+
           <button class="button" id="btn">Aplicar</button>
         </div>
+
+        
 
         
       </aside>
@@ -129,6 +176,15 @@
 
               let BidInputInit = document.querySelector('#text10');
               let BidInputEnd = document.querySelector('#text11');
+
+              let CustoInputInit = document.querySelector('#text12');
+              let CustoInputEnd = document.querySelector('#text13');
+
+              let GreedyInputInit = document.querySelector('#text14');
+              let GreedyInputEnd = document.querySelector('#text15');
+
+              let AInputInit = document.querySelector('#text16');
+              let AInputEnd = document.querySelector('#text17');
 
 
 
@@ -837,7 +893,7 @@ for(var cont in caminho){
         //segundo amplitude
 
 
-                const flag1 = true;
+                flag1 = true;
 
                 while(flag1){
                 var atual = l3.deletaPrimeiro();
@@ -999,6 +1055,59 @@ greedy(inicio,fim){
         }
 }
 
+a_estrela(inicio,fim){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
+
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
+
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo();
+               if(atual.valor1 == fim){
+                   var caminho = [];
+                   caminho = l2.exibeArvore2(atual.valor1,atual.valor2);
+                   return caminho;
+               }
+
+               var ind = atual.valor1;
+               for(var i in grafo2[ind]){
+                   var novo = grafo2[ind][i][0];
+
+                   var ind1 = grafo2[ind][i][0];
+
+                   var v3 = atual.valor3 + grafo2[ind][i][1];
+                   var v2 = heuristica(inicio,fim);
+                   v2 = v3 + v2
+
+                   var flag = true;
+                   for(var j in visitado){
+                       if(visitado[j][0]==novo){
+                           if(visitado[j][1] <= v2){
+                               flag= true
+                           }
+                           break;
+                       }
+                   }
+                   if(flag){
+                       l1.inserePos_X(novo,v2,v2,atual);
+                       l2.inserePos_X(novo,v2,v2,atual);
+                       linha = []
+                       linha.push(novo);
+                       linha.push(v2);
+                       visitado.push(linha);
+                   }
+               }
+               return "Caminho não encontrado";
+        }
+}
+
 
 
 
@@ -1046,6 +1155,39 @@ greedy(inicio,fim){
                
                var buscaa = new busca();
                var result = buscaa.profundidade_limitada(BidInit,BidEnd,);
+               var geojson = buscaa.pontos(result);
+               map(geojson);
+           }
+
+
+           else if(radio.value == 6){
+               var CustoInit = CustoInputInit.value;
+               var CustoEnd =  CustoInputEnd.value;
+               
+               var buscaa = new busca();
+               var result = buscaa.custo_uniforme(CustoInit,CustoEnd,);
+               var geojson = buscaa.pontos(result);
+               map(geojson);
+           }
+
+
+           else if(radio.value == 7){
+               var GreedyInit = GreedyInputInit.value;
+               var GreedyEnd =  GreedyInputEnd.value;
+               
+               var buscaa = new busca();
+               var result = buscaa.greedy(GreedyInit,GreedyEnd,);
+               var geojson = buscaa.pontos(result);
+               map(geojson);
+           }
+
+
+           else if(radio.value == 8){
+               var AInit = AInputInit.value;
+               var AEnd =  AInputEnd.value;
+               
+               var buscaa = new busca();
+               var result = buscaa.a_estrela(AInit,AEnd,);
                var geojson = buscaa.pontos(result);
                map(geojson);
            }
