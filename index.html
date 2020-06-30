@@ -137,10 +137,12 @@ var result = btnAplicar.addEventListener('click',()=>{
        if(radio.checked){
 
         class No{
-            constructor(pai =null, valor1=null, valor2=null,anterior=null,proximo=null){
+            constructor(pai =null, valor1=null, valor2=null,valor3=null,anterior=null,proximo=null){
                 this.pai = pai;
+                
                 this.valor1 = valor1;
                 this.valor2 = valor2;
+                this.valor3 = valor3;
                 this.anterior = anterior;
                 this.proximo = proximo;
             }
@@ -172,6 +174,32 @@ var result = btnAplicar.addEventListener('click',()=>{
                     novo_no.anterior = this.tail
                 }
                 this.tail = novo_no
+            }
+            inserePos_X(v1,v2,v3,p){
+                if(this.head == null){
+                    this.inserePrimeiro(v1,v2,v3,p);
+                }else{
+                    var atual = this.head;
+                    while(atual.valor2 < v2){
+                        atual = atual.proximo;
+                        if(atual == null)break;
+                    }
+                    if(atual == this.head){
+                        this.inserePrimeiro(v1,v2,v3,p)
+                    }else{
+                        if(atual == null){
+                            this.insereUltimo(v1,v2,v3,p);
+                        }else{
+                            var novo_no = new No(p,v1,v2,v3,null,null)
+
+                            var aux = atual.anterior;
+                            aux.proximo = novo_no;
+                            novo_no.anterior = aux;
+                            atual.anterior = novo_no;
+                            novo_no.proximo = atual;
+                        }
+                    }
+                }
             }
             deletaPrimeiro()
             {
@@ -247,6 +275,19 @@ var result = btnAplicar.addEventListener('click',()=>{
                 caminho.push(atual.valor1)
                 return caminho
             }
+            exibeArvore2(v1,v2){
+                var atual = this.tail;
+                while(atua.valor1 != v1 || atual.valor2 != v2){
+                    atual = atual.anterior;
+                }
+                var caminho = [];
+                while(atual.pai != null){
+                    caminho.push(atual.valor1);
+                    atual = atual.pai;
+                }
+                caminho.push(atual.valor1);
+                return caminho;
+            }
         
             primeiro(){
                 return this.head
@@ -255,6 +296,19 @@ var result = btnAplicar.addEventListener('click',()=>{
             ultimo(){
                 return this.tail
             }
+
+            heuristica(atual,origem){
+                const lista = [
+                [61,10],[52,23],[15,22],[37,24],[13,33],[28,25],[44,27],[44,12],
+                [46,35],[20,28],[26,29],[46,17],[55,38],[10,25],[36,14],[28,20],
+                [50,12],[33,10],[30,7],[6,30]]
+
+                var [x_atual,y_atual] = lista[atual];
+                var [x_obj,y_obj]     = lista[origem];
+
+                return Math.sqrt((x_atual-x_obj)*(x_atual-x_obj) + (y_atual-y_obj)*(y_atual-y_obj))
+                }
+
         
         }
         
@@ -282,6 +336,34 @@ var result = btnAplicar.addEventListener('click',()=>{
             [4]
                 
          ]
+
+         var grafo2 = [
+            [[12,20], [16,7]], 
+            [[3,8],[6,5]],
+            [[10,8],[13,4]],
+            [[1,8],[5,4],[8,9],[11,6]],
+            [[13,5],[19,5]],
+            [[3,4],[6,10],[10,3],[15,3]],
+            [[1,5],[5,10],[8,4],[10,11]],
+            [[14,5],[16,3]],
+            [[3,9],[6,4],[12,5]],
+            [[10,4],[13,7]],
+            [[2,8],[5,3],[6,11],[9,4],[15,6]],
+            [[3,6],[15,11],[16,3]],
+            [[0,20],[8,5]],
+            [[2,4],[4,5],[9,7]],
+            [[7,5],[15,6],[17,3]],
+            [[5,3],[10,6],[11,11],[14,6]],
+            [[0,7],[7,3],[11,3]],
+            [[14,3],[18,2]],
+            [[17,2]],
+            [[4,5]]
+                
+         ]
+
+        
+
+         
         
         function map(geojson){
           mapboxgl.accessToken = 'pk.eyJ1IjoiZGVyZWtraXMiLCJhIjoiY2s3cXczenJ1MDd3bTNtbHVjajlxZjdyaSJ9.3sxJmEM9hwod4o-pM0qutA';
@@ -507,213 +589,268 @@ for(var cont in caminho){
              }
 
 
-    profundidade(inicio, fim){
-        var l1 = new lista()
-        var l2 = new lista()  
-        var visitado = []
+            profundidade(inicio, fim){
+                var l1 = new lista()
+                var l2 = new lista()  
+                var visitado = []
 
-        l1.insereUltimo(inicio,0,null)
-        l2.insereUltimo(inicio,0,null)
-        var linha = []
-        linha.push(inicio)
-        linha.push(0)
-        visitado.push(linha)
+                l1.insereUltimo(inicio,0,null)
+                l2.insereUltimo(inicio,0,null)
+                var linha = []
+                linha.push(inicio)
+                linha.push(0)
+                visitado.push(linha)
 
-        
-        while(l1.vazio() != null){
-               var atual = l1.deletaUltimo()
-               if (atual == null){break}
-               var ind = atual.valor1
+                
+                while(l1.vazio() != null){
+                    var atual = l1.deletaUltimo()
+                    if (atual == null){break}
+                    var ind = atual.valor1
 
-               for (let i = grafo[ind].length - 1; i >= 0; i--){
-                   var novo = grafo[ind][i]
-                   var flag = true
-                   for(var j in visitado){
-                       if(visitado[j][0]==novo){
-                            if(visitado[j][1]<=(atual.valor2+1)){
-                                   flag = false;   
+                    for (let i = grafo[ind].length - 1; i >= 0; i--){
+                        var novo = grafo[ind][i]
+                        var flag = true
+                        for(var j in visitado){
+                            if(visitado[j][0]==novo){
+                                    if(visitado[j][1]<=(atual.valor2+1)){
+                                        flag = false;   
+                                    }
+                                    else{
+                                        visitado[j][1]<=(atual.valor2+1)
+                                }
+                                break;
                             }
-                            else{
-                                visitado[j][1]<=(atual.valor2+1)
-                         }
-                         break;
-                     }
 
-                   if(flag){
-                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
-                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
-                       linha = []
-                       linha.push(novo)
-                       linha.push(atual.valor2+1)
-                       visitado.push(linha)
-                       if(novo == fim){
-                           var caminho =[]
-                           caminho = l2.exibeArvore()
-                           return caminho
-                       }
-                   }
-               }
+                        if(flag){
+                            l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                            l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                            linha = []
+                            linha.push(novo)
+                            linha.push(atual.valor2+1)
+                            visitado.push(linha)
+                            if(novo == fim){
+                                var caminho =[]
+                                caminho = l2.exibeArvore()
+                                return caminho
+                            }
+                        }
+                    }
+                }
+
+            }  
+            return null;
         }
 
-    }  
-    return null;
- }
 
+        profundidade_limitada(inicio, fim, limite){
+                var l1 = new lista()
+                var l2 = new lista()  
+                var visitado = []
 
- profundidade_limitada(inicio, fim, limite){
-        var l1 = new lista()
-        var l2 = new lista()  
-        var visitado = []
+                l1.insereUltimo(inicio,0,null)
+                l2.insereUltimo(inicio,0,null)
+                var linha = []
+                linha.push(inicio)
+                linha.push(0)
+                visitado.push(linha)
 
-        l1.insereUltimo(inicio,0,null)
-        l2.insereUltimo(inicio,0,null)
-        var linha = []
-        linha.push(inicio)
-        linha.push(0)
-        visitado.push(linha)
+                
+                while(l1.vazio() != null){
+                    var atual = l1.deletaUltimo()
+                    if (atual == null){break}
 
-        
-        while(l1.vazio() != null){
-               var atual = l1.deletaUltimo()
-               if (atual == null){break}
-
-            if(atual.valor2 < limite){
-               var ind = atual.valor1
-               for (let i = grafo[ind].length - 1; i >= 0; i--){
-                   var novo = grafo[ind][i]
-                   var flag = true
-                   for(var j in visitado){
-                       if(visitado[j][0]==novo){
-                            if(visitado[j][1]<=(atual.valor2+1)){
-                                   flag = false;   
+                    if(atual.valor2 < limite){
+                    var ind = atual.valor1
+                    for (let i = grafo[ind].length - 1; i >= 0; i--){
+                        var novo = grafo[ind][i]
+                        var flag = true
+                        for(var j in visitado){
+                            if(visitado[j][0]==novo){
+                                    if(visitado[j][1]<=(atual.valor2+1)){
+                                        flag = false;   
+                                    }
+                                    else{
+                                        visitado[j][1]<=(atual.valor2+1)
+                                }
+                                break;
                             }
-                            else{
-                                visitado[j][1]<=(atual.valor2+1)
-                         }
-                         break;
-                     }
 
-                   if(flag){
-                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
-                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
-                       linha = []
-                       linha.push(novo)
-                       linha.push(atual.valor2+1)
-                       visitado.push(linha)
-                       if(novo == fim){
-                           var caminho =[]
-                           caminho = l2.exibeArvore()
-                           return caminho
-                       }
-                   }
-               }
-        }
-    }
-
- }  
- //var texto = String(limite)+"limite execiddo";
- return null;
-    
-}
-
-aprofundamento_interativo(inicio, fim, l_max){
-        
-    for(let limite =0; limite <= l_max.length; limite++){
-        var l1 = new lista()
-        var l2 = new lista()  
-        var visitado = []
-
-        l1.insereUltimo(inicio,0,null)
-        l2.insereUltimo(inicio,0,null)
-        var linha = []
-        linha.push(inicio)
-        linha.push(0)
-        visitado.push(linha)
-
-        
-        while(l1.vazio() != null){
-               var atual = l1.deletaUltimo()
-               if (atual == null){break}
-
-            if(atual.valor2 < limite){
-               var ind = atual.valor1
-               for (let i = grafo[ind].length - 1; i >= 0; i--){
-                   var novo = grafo[ind][i]
-                   var flag = true
-                   for(let j in visitado){
-                       if(visitado[j][0]==novo){
-                            if(visitado[j][1]<=(atual.valor2+1)){
-                                   flag = false;   
+                        if(flag){
+                            l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                            l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                            linha = []
+                            linha.push(novo)
+                            linha.push(atual.valor2+1)
+                            visitado.push(linha)
+                            if(novo == fim){
+                                var caminho =[]
+                                caminho = l2.exibeArvore()
+                                return caminho
                             }
-                            else{
-                                visitado[j][1]=(atual.valor2+1)
-                         }
-                         break;
-                     }
+                        }
+                    }
+                }
+            }
 
-                   if(flag){
-                       l1.insereUltimo(novo,atual.valor2 + 1, atual)
-                       l2.insereUltimo(novo, atual.valor2 + 1,atual)
-                       linha = []
-                       linha.push(novo)
-                       linha.push(atual.valor2+1)
-                       visitado.push(linha)
-                       if(novo == fim){
-                           var caminho =[]
-                           caminho = l2.exibeArvore()
-                           return caminho
-                       }
-                   }
-               }
-        }
-    }
-
-  }
-}  
-
-}
-
-
-bidirecional(inicio, fim){
-        
-        
-            var l1 = new lista()
-            var l2 = new lista()
-
-            var l3 = new lista()
-            var l4 = new lista()    
-            var visitado = []
-    
-            l1.insereUltimo(inicio,0,null)
-            l2.insereUltimo(inicio,0,null)
-            var linha = []
-            linha.push(inicio)
-            linha.push(1)
-            visitado.push(linha)
-
-
-            l3.insereUltimo(fim,0,null)
-            l4.insereUltimo(fim,0,null)
-            linha = []
-            linha.push(fim)
-            linha.push(2)
-            visitado.push(linha)
-    
+        }  
+        //var texto = String(limite)+"limite execiddo";
+        return null;
             
-            while(true){
+        }
+
+        aprofundamento_interativo(inicio, fim, l_max){
+                
+            for(let limite =0; limite <= l_max.length; limite++){
+                var l1 = new lista()
+                var l2 = new lista()  
+                var visitado = []
+
+                l1.insereUltimo(inicio,0,null)
+                l2.insereUltimo(inicio,0,null)
+                var linha = []
+                linha.push(inicio)
+                linha.push(0)
+                visitado.push(linha)
+
+                
+                while(l1.vazio() != null){
+                    var atual = l1.deletaUltimo()
+                    if (atual == null){break}
+
+                    if(atual.valor2 < limite){
+                    var ind = atual.valor1
+                    for (let i = grafo[ind].length - 1; i >= 0; i--){
+                        var novo = grafo[ind][i]
+                        var flag = true
+                        for(let j in visitado){
+                            if(visitado[j][0]==novo){
+                                    if(visitado[j][1]<=(atual.valor2+1)){
+                                        flag = false;   
+                                    }
+                                    else{
+                                        visitado[j][1]=(atual.valor2+1)
+                                }
+                                break;
+                            }
+
+                        if(flag){
+                            l1.insereUltimo(novo,atual.valor2 + 1, atual)
+                            l2.insereUltimo(novo, atual.valor2 + 1,atual)
+                            linha = []
+                            linha.push(novo)
+                            linha.push(atual.valor2+1)
+                            visitado.push(linha)
+                            if(novo == fim){
+                                var caminho =[]
+                                caminho = l2.exibeArvore()
+                                return caminho
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        }  
+
+        }
+
+
+        bidirecional(inicio, fim){
+                
+                
+                    var l1 = new lista()
+                    var l2 = new lista()
+
+                    var l3 = new lista()
+                    var l4 = new lista()    
+                    var visitado = []
+            
+                    l1.insereUltimo(inicio,0,null)
+                    l2.insereUltimo(inicio,0,null)
+                    var linha = []
+                    linha.push(inicio)
+                    linha.push(1)
+                    visitado.push(linha)
+
+
+                    l3.insereUltimo(fim,0,null)
+                    l4.insereUltimo(fim,0,null)
+                    linha = []
+                    linha.push(fim)
+                    linha.push(2)
+                    visitado.push(linha)
+            
+                    
+                    while(true){
+
+                        const flag1 = true;
+
+                        while(flag1){
+                        var atual = l1.deletaPrimeiro();
+                        var ind = atual.valor1;
+                        for(var i in grafo[ind]){
+                            var novo = grafo[ind][i];
+                            var flag2 = true;
+                            var flag3 = false;
+                            for (var j in visitado){
+                                if(visitado[j][0]==novo){
+                                    if(visitado[j][1] == 1){
+                                        flag2 = false;
+                                    }else{
+                                        flag3 = true;
+                                    }
+                                    break;
+                                }
+
+                            }
+
+                            if(flag2){
+                                l1.insereUltimo(novo,atual.valor2 + 1,atual);
+                                l2.insereUltimo(nvo,atual.valor2 + 1, atual);
+                                if(flag3){
+                                    var caminho = [];
+                                    caminho = l2.exibeArvore();
+                                    caminho = caminho.reverse();
+                                    caminho += l4.exibeArvore1(novo);
+                                    return caminho;
+                                }else{
+                                    linha = []
+                                    linha.push(novo);
+                                    linha.push(1);
+                                    visitado.push(linha);
+                                } 
+                            }
+
+                        }
+                        if(l1.vazio() != true){
+                            const aux = l1.primeiro();
+                            if(aux.valor2 == atual.valor2){
+                                flag1 = true;
+                            }else{
+                                flag1 = false;
+                            }
+                        }
+
+
+                    }
+        //segundo amplitude
+
 
                 const flag1 = true;
 
                 while(flag1){
-                var atual = l1.deletaPrimeiro();
+                var atual = l3.deletaPrimeiro();
+                if(atual == null){break}
                 var ind = atual.valor1;
+
                 for(var i in grafo[ind]){
                     var novo = grafo[ind][i];
                     var flag2 = true;
                     var flag3 = false;
                     for (var j in visitado){
                         if(visitado[j][0]==novo){
-                            if(visitado[j][1] == 1){
+                            if(visitado[j][1] == 2){
                                 flag2 = false;
                             }else{
                                 flag3 = true;
@@ -728,21 +865,21 @@ bidirecional(inicio, fim){
                         l2.insereUltimo(nvo,atual.valor2 + 1, atual);
                         if(flag3){
                             var caminho = [];
-                            caminho = l2.exibeArvore();
+                            caminho = l4.exibeArvore();
                             caminho = caminho.reverse();
-                            caminho += l4.exibeArvore1(novo);
+                            caminho += l2.exibeArvore1(novo);
                             return caminho;
                         }else{
                             linha = []
                             linha.push(novo);
-                            linha.push(1);
+                            linha.push(2);
                             visitado.push(linha);
                         } 
                     }
 
                 }
-                if(l1.vazio() != true){
-                    const aux = l1.primeiro();
+                if(l3.vazio() != true){
+                    const aux = l3.primeiro();
                     if(aux.valor2 == atual.valor2){
                         flag1 = true;
                     }else{
@@ -752,71 +889,118 @@ bidirecional(inicio, fim){
 
 
             }
-//segundo amplitude
-
-
-        const flag1 = true;
-
-        while(flag1){
-        var atual = l3.deletaPrimeiro();
-        if(atual == null){break}
-        var ind = atual.valor1;
-
-        for(var i in grafo[ind]){
-            var novo = grafo[ind][i];
-            var flag2 = true;
-            var flag3 = false;
-            for (var j in visitado){
-                if(visitado[j][0]==novo){
-                    if(visitado[j][1] == 2){
-                        flag2 = false;
-                    }else{
-                        flag3 = true;
-                    }
-                    break;
-                }
-
-            }
-
-            if(flag2){
-                l1.insereUltimo(novo,atual.valor2 + 1,atual);
-                l2.insereUltimo(nvo,atual.valor2 + 1, atual);
-                if(flag3){
-                    var caminho = [];
-                    caminho = l4.exibeArvore();
-                    caminho = caminho.reverse();
-                    caminho += l2.exibeArvore1(novo);
-                    return caminho;
-                }else{
-                    linha = []
-                    linha.push(novo);
-                    linha.push(2);
-                    visitado.push(linha);
-                } 
-            }
 
         }
-        if(l3.vazio() != true){
-            const aux = l3.primeiro();
-            if(aux.valor2 == atual.valor2){
-                flag1 = true;
-            }else{
-                flag1 = false;
-            }
+
+            
         }
+            
+//algoritmos com peso
+custo_uniforme(inicio,fim){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
 
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
 
-    }
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo();
+               if(atual.valor1 == fim){
+                   var caminho = [];
+                   caminho = l2.exibeArvore2(atual.valor1,atual.valor2);
+                   return caminho;
+               }
 
+               var ind = atual.valor1;
+               for(var i in grafo2[ind]){
+                   var novo = grafo2[ind][i][0];
+
+                   var v2 = atual.valor2 + grafo2[ind][i][1];
+
+                   var flag = true;
+                   for(var j in visitado){
+                       if(visitado[j][0]==novo){
+                           if(visitado[j][1] <= v2){
+                               flag= true
+                           }
+                           break;
+                       }
+                   }
+                   if(flag){
+                       l1.inserePos_X(novo,v2,v2,atual);
+                       l2.inserePos_X(novo,v2,v2,atual);
+                       linha = []
+                       linha.push(novo);
+                       linha.push(v2);
+                       visitado.push(linha);
+                   }
+               }
+               return "Caminho não encontrado";
+        }
 }
 
-    
+
+greedy(inicio,fim){
+        var l1 = new lista()
+        var l2 = new lista()  
+        var visitado = []
+
+        l1.insereUltimo(inicio,0,null)
+        l2.insereUltimo(inicio,0,null)
+        var linha = []
+        linha.push(inicio)
+        linha.push(0)
+        visitado.push(linha)
+
+        
+        while(l1.vazio() != null){
+               var atual = l1.deletaUltimo();
+               if(atual.valor1 == fim){
+                   var caminho = [];
+                   caminho = l2.exibeArvore2(atual.valor1,atual.valor2);
+                   return caminho;
+               }
+
+               var ind = atual.valor1;
+               for(var i in grafo2[ind]){
+                   
+                   var novo = grafo2[ind][i][0];
+
+                   var ind1 = grafo2[ind][i][0];
+
+                   var v2 = heuristica(inicio,fim);
+                   var v3 = atual.valor3 + grafo2[ind][i][1];
+
+                   var flag = true;
+                   for(var j in visitado){
+                       if(visitado[j][0]==novo){
+                           if(visitado[j][1] <= v2){
+                               flag= true
+                           }
+                           break;
+                       }
+                   }
+                   if(flag){
+                       l1.inserePos_X(novo,v2,v2,atual);
+                       l2.inserePos_X(novo,v2,v2,atual);
+                       linha = []
+                       linha.push(novo);
+                       linha.push(v2);
+                       visitado.push(linha);
+                   }
+               }
+               return "Caminho não encontrado";
+        }
 }
-    
 
 
 
-//fim algoritmos
 
 }
 
